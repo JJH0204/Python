@@ -14,6 +14,7 @@
 <div markdown="1">
 
 ### 1. Python IDE Setting
+- [windows setting](project\LearnPy\markdown\PythonSetting.md)
 ### 2. Learn using Python
 
 </div>
