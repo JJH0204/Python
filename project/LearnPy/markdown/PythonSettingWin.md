@@ -50,4 +50,27 @@ python -c "import sys; print(sys.executable)"
 ## C. 가상환경 세팅하기
 - mac os 에서는 pyenv 설치 시 **"pyenv-virtualenv"**가 함께 설치되어 가상환경 관리가 쉽다고 한다.
 - 어떻게든 pyenv-virtualenv를 windows 환경에서 사용해보고자 삽질해 봤지만 방법은 없는 것 같다. [설치관련 정보](https://github.com/pyenv/pyenv-virtualenv)
-- pyenv-virtualenv 없이 python의 **"venv"** 명령어를 활용해 가상환경을 관리하는 방법을 사용하려고 한다. [pyenv-virtualenv를 활용한 가상 환경 관리]
+- pyenv-virtualenv 없이 python의 **"venv"** 명령어를 활용해 가상환경을 관리하는 방법을 사용하려고 한다. [pyenv-virtualenv를 활용한 가상 환경 관리](https://deku.posstree.com/ko/environment/pyenv/#pyenv-virtualenv-%EC%84%A4%EC%B9%98)
+
+#### 1. 프로젝트 디렉토리로 이동
+- 터미널 실행 후 ```cd 프로젝트 디렉토리```명령어 실행하여 디렉토리 이동 후 아래 명령어 실행
+```
+python -m venv "가상환경 디렉토리 이름"
+```
+- .venv 로 디렉토리 이름을 정하는게 관행임으로 어느정도 차용할 필요는 있어 보인다.
+#### 2. .gitignore 추가 (선택)
+- 가상 환경을 굳이 git과 같은 소스 버전에 관리 시스템에 올릴 필요는 없다.
+- 버전 관리 시스템으로 관리가 필요하다면 진행하지 않아도 된다.
+
+#### 3. 가상환경 활성화
+- 터미널에서 아래 명령어 실행
+```shell
+.가상환경이름\Scripts\activate.bat
+```
+- 아래 명령어로 활성화 여부 확인가능
+```shell
+where python
+C:\...
+E:\...\.venv_LearnPy\Scripts\python.exe  #프로젝트 디렉토리에 python 정보 확인가능
+C:\...
+```
