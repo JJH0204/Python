@@ -10,10 +10,20 @@
 
 ## Project
 <details>
+<summary>Learn Python</summary>
+<div markdown="1">
+
+### 1. Python IDE Setting
+### 2. Learn using Python
+
+</div>
+</details>
+
+<details>
 <summary>Ticketing automation tool</summary>
 <div markdown="1">
 
-### 1. 
+### 1. Learn Using Selenium
 
 </div>
 </details>
@@ -23,11 +33,10 @@
 <div markdown="1">
 
 ### 1. UPbit API Key 발급
-### 2. Python IDE Setting
-### 3. Learn using "UPbit API" & "Python"
-### 4. Trading logic implementation
-### 5. Test environment configuration
-### 6. Test and Fix
+### 2. Learn using "UPbit API"
+### 3. Trading logic implementation
+### 4. Test environment configuration
+### 5. Test and Fix
 
 </div>
 </details>
