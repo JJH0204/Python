@@ -41,7 +41,7 @@ Invoke-WebRequest -UseBasicParsing -Uri "https://raw.githubusercontent.com/pyenv
 - 설치한 python들 중 원하는 버전의 python을 전역 버전으로 설정한다.
 - 이렇게 하면 가상환경 생성 시 기본 python 버전을 설정한 것이 된다.
 - 이후 pyenv 명령어를 통해 가상환경 생성 후 원하는 python 버전을 설정하면 된다.
-#### Python 작동 확인
+#### 5. Python 작동 확인
 ```shell
 python -c "import sys; print(sys.executable)"
 ```
@@ -74,3 +74,30 @@ C:\...
 E:\...\.venv_LearnPy\Scripts\python.exe  #프로젝트 디렉토리에 python 정보 확인가능
 C:\...
 ```
+#### 4. 가상환경 파이썬 버전 변경
+- 가상환경에 만 별도의 파이썬 버전을 사용하고 싶은 경우 우선 사용하고자 하는 파이썬을 설치한 상태여야 한다.
+- 설치한 후 사용하고자 하는 프로젝트 디렉토리에서 ```pyenv local 사용할 버전```을 입력해 버전을 변경한다.
+
+#### 5. venv 에 대한 자세한 정보 [(링크)](https://docs.python.org/ko/3/library/venv.html)
+
+## D. 가상환경 세팅 일련의 과정 정리
+```sh
+E:\Document\GitHub\LearnPy> cd project\AutoTicketing                            # 프로젝트 디렉토리로 이동
+E:\Document\GitHub\LearnPy\project\AutoTicketing> python -m venv .venv          # .venv 라는 이름의 가상환경 생성
+E:\Document\GitHub\LearnPy\project\AutoTicketing> cmd /c pyenv local 3.9.9      # 디렉토리 파이썬 버전 설정
+E:\Document\GitHub\LearnPy\project\AutoTicketing> .venv\Scripts\activate.bat    # 가상환경 활성화
+(.venv) E:\Document\GitHub\LearnPy\project\AutoTicketing> where python          # 가상환경 활성화 확인
+E:\Document\GitHub\LearnPy\project\AutoTicketing\.venv\Scripts\python.exe
+C:\Users\jhjy5\.pyenv\pyenv-win\shims\python
+C:\Users\jhjy5\.pyenv\pyenv-win\shims\python.bat
+C:\Users\jhjy5\AppData\Local\Microsoft\WindowsApps\python.exe
+
+(.venv) E:\Document\GitHub\LearnPy\project\AutoTicketing>deactivate.bat         # 가상환경 비활성화
+E:\Document\GitHub\LearnPy\project\AutoTicketing>
+```
+
+#### 6. vscode 터미널 powershell을 cmd로 변경하기
+- Powershell이랑 cmd 명령어가 서로 다르고 Powershell에서 cmd 명령어를 사용해 결과를 바로 확인할 수 없어서 불편했다.
+- VSCode 터미널 설정이 Powershell이라면 CMD로 바꾸자 [(링크)](https://herojoon-dev.tistory.com/106)
+- 만약 터미널을 관리자 권한으로 실행하고 싶다면 [(링크)](https://hianna.tistory.com/549)
+- 

@@ -13,4 +13,5 @@ import os
 
 # print(pyupbit.get_current_price(["KRW-BTC", "KRW-ETH"]))
 
+print(3+5)
 os.system('pause')
