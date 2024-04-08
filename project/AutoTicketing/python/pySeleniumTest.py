@@ -33,7 +33,7 @@ if login_type == "local":
     username_input = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "userId")))
     password_input = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "userPwd")))
 
-    username_input.send_keys(config['credentials']['username'])
+    username_input.send_keys(config['credentials']['id'])
     password_input.send_keys(config['credentials']['password'])
     # 로그인 버튼이 클릭 가능할 때까지 대기
     try:
@@ -73,15 +73,47 @@ elif login_type == "kakao":
 #     appleLogin_link.click()
 
 # Step-3: 공연 검색
-# 검색어가 포함된 URL로 직접 이동 
-search_query = "2024 LCK 스프링 결승 진출전 HLE vs T1"
-encoded_query = urllib.parse.quote(search_query)  # 검색어를 URL 인코딩합니다.
-url = f"https://isearch.interpark.com/result?q={encoded_query}"
-driver.get(url)
-# 위 방법은 완벽하지 않아 추후에 추가 작업이 발생할 수 있다.
+search_query = config['search_Key']
+search_Type = config['search_Type']
+if search_Type == "search_URL":
+    # 검색어가 포함된 URL로 직접 이동 
+    encoded_query = urllib.parse.quote(search_query)  # 검색어를 URL 인코딩합니다.
+    url = f"https://isearch.interpark.com/result?q={encoded_query}"
+    driver.get(url)
+    # 위 방법은 완벽하지 않아 추후에 추가 작업이 발생할 수 있다.
+# elif search_Type == "search_field":
+#     # 검색 입력 필드 선택하여 팝업 활성화
+#     search_field_main = driver.find_element(By.ID, "inputSearch")
+#     search_field_main.click()
+
+#     # 팝업 내 검색 입력 필드가 활성화될 때까지 대기
+#     search_field_popup = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "input_autoKeyword")))
+#     # 팝업 내 검색 입력 필드에 검색어 입력
+#     search_field_popup.send_keys(search_query)
+#     os.system('pause')
+#     # 팝업 내 적절한 검색 버튼 클릭
+#     search_button_popup = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, "inputSearchBtn")))
+#     search_button_popup.click()
 
 
-# 추가 작업 수행...
+# 원하는 검색어가 포함된 링크를 찾는다.
+wait = WebDriverWait(driver, 10)
+links = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, "a[data-prd-name='"+search_query+"']")))
+
+# 첫 번째 링크를 선택하여 클릭하거나 새 탭에서 열기
+if links:
+    link = links[0].get_attribute('href')
+    print(f"Found link: {link}")
+    # 새 탭에서 링크 열기
+    driver.execute_script("window.open(arguments[0]);", link)
+    # 또는 클릭하여 현재 창에서 링크 열기
+    # links[0].click()
+else:
+    print("Link not found.")
+
+# 안내 팝업이 뜨면 에러가 발생한다.
+close_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, "popupCloseBtn is-bottomBtn")))
+close_button.click()
 os.system('pause')
 
 driver.quit()

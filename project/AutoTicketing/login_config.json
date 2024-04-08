@@ -1,7 +1,7 @@
 {
     "login_type": "local",
     "credentials": {
-        "username": "jaeho6627",
+        "id": "jaeho6627",
         "password": "choa0306@@"
     },
     "social": {
@@ -17,5 +17,8 @@
             "id": "your_naver_id",
             "password": "your_naver_password"
         }
-    }
+    },
+    "search_Key": "2024 LCK 스프링 결승 진출전 HLE vs T1",
+    "search_Type": "search_URL",
+    "search_Type_comment": "search_URL 방식 또는 search_field(직접 검색 방식) 둘 중 원하는 것을 선택할 수 있다."
 }
