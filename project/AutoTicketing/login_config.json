@@ -1,0 +1,21 @@
+{
+    "login_type": "local",
+    "credentials": {
+        "username": "jaeho6627",
+        "password": "choa0306@@"
+    },
+    "social": {
+        "kakao": {
+            "id": "jaeho6627@kakao.com",
+            "password": "choa0306@@"
+        },
+        "google": {
+            "id": "your_google_id",
+            "password": "your_google_password"
+        },
+        "naver": {
+            "id": "your_naver_id",
+            "password": "your_naver_password"
+        }
+    }
+}
