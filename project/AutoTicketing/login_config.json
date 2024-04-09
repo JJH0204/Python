@@ -20,6 +20,6 @@
     },
     "search_Site": "https://www.interpark.com/",
     "search_Key": "2024 LCK 스프링 결승전 GEN vs",
-    "search_Type": "search_URL",
+    "search_Type": "search_field",
     "search_Type_comment": "search_URL 방식 또는 search_field(직접 검색 방식) 둘 중 원하는 것을 선택할 수 있다."
 }
