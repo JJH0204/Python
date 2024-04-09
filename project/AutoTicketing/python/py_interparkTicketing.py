@@ -89,7 +89,7 @@ def searchTicket(driver, config):
 
 
     # 원하는 검색어가 포함된 링크를 찾는다.
-    links = WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, "a[data-prd-name^='"+search_query+"']")))
+    links = WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, "a[data-prd-name*='"+search_query+"']")))
 
     # 첫 번째 링크를 선택하여 클릭하거나 새 탭에서 열기
     if links:
