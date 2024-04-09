@@ -86,14 +86,20 @@ def searchTicket(driver, config):
         # 위 방법은 완벽하지 않아 추후에 추가 작업이 발생할 수 있다.
     # TODO: 검색 필드를 활용한 공연 검색
     elif search_Type == "search_field":
-        # 검색 입력 필드가 활성화될 때까지 대기
-		search_field = WebDriverWait(driver, 10).until(
+        # 검색 입력 필드 선택하여 팝업 활성화
+		search_field_main = WebDriverWait(driver, 10).until(
     		EC.element_to_be_clickable((By.ID, "inputSearch"))
+		)
+		search_field_main.click()
+
+		# 팝업 내 검색 입력 필드가 활성화될 때까지 대기
+		search_field_popup = WebDriverWait(driver, 10).until(
+		    EC.element_to_be_clickable((By.ID, "input_autoKeyword"))
 		)
 
 		# 검색 입력 필드에 검색어 입력
-		search_field.send_keys(search_query)
-        search_field.send_keys(Keys.ENTER)
+        search_field_popup.send_keys(search_query)
+        search_field_popup.send_keys(Keys.ENTER)
 
     # 원하는 검색어가 포함된 링크를 찾는다.
     links = WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, "a[data-prd-name*='"+search_query+"']")))
