@@ -9,12 +9,14 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import Select
 
-import json
+
 import urllib.parse
 
 import os
 import time
-import easyocr
+import random
+
+from py_Json import json
 
 def readJson():
     with open('project/AutoTicketing/login_config.json', 'r') as file:        # json 로그인 정보 가져오기
@@ -120,68 +122,64 @@ def searchTicket(driver, pageLodeWait, config):
     # 웹페이지가 로드될 때까지 2초를 대기
     driver.implicitly_wait(time_to_wait=2)
 
-    # 원하는 검색어가 포함된 링크를 찾는다.
-    links = pageLodeWait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, "a[data-prd-name^='"+search_query+"']")))
+    # 첫번째 페이지를 선택한다.
+    links = pageLodeWait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="ticketContent"]/div[2]/ul/li/a')))
+    links.click()
 
-    # 웹페이지가 로드될 때까지 2초를 대기
-    driver.implicitly_wait(time_to_wait=2)
-
-    # 첫 번째 링크를 선택하여 클릭하거나 새 탭에서 열기
-    if links:
-        link = links[0].get_attribute('href')
-        print(f"Found link: {link}")
-        # 새 탭에서 링크 열기
-        driver.execute_script("window.open(arguments[0]);", link)
-    else:
-        print("Link not found.")
-    
     # 웹페이지가 로드될 때까지 2초를 대기
     driver.implicitly_wait(time_to_wait=2)
 
     print(driver.window_handles)
     driver.switch_to.window(driver.window_handles[-1])
-
-    # 웹페이지가 로드될 때까지 2초를 대기
-    driver.implicitly_wait(time_to_wait=5)
 
     return
 
 # 좌석 탐색
-def select(driver):
+def select(driver, pageLodeWait, config):
+    # 페이지가 완전히 로드될 때까지 기다림 (필요에 따라 조정)
+    time.sleep(5)
+
     print(driver.window_handles)
     driver.switch_to.window(driver.window_handles[-1])
-    driver.switch_to.frame(driver.find_element(By.XPATH,'//*[@id="ifrmSeat"]'))
-    
-    # 좌석등급 선택
-    #driver.find_element(By.XPATH,'//*[@id="GradeRow"]/td[1]/div/span[2]').click()
-    
-    while True:
-        # 세부 구역 선택
-        driver.find_element(By.XPATH,'//*[@id="GradeDetail"]/div/ul/li[1]/a').click()
-        
-        # 좌석선택 아이프레임으로 이동
-        driver.switch_to.frame(driver.find_element(By.XPATH,'//*[@id="ifrmSeatDetail"]'))
-        
-        # 좌석이 있으면 좌석 선택
+
+    # 좌석 요소를 모두 찾기 (예: 'stySeat' 클래스를 가진 모든 요소)
+    # TODO: 자리 찾아서 선택
+    seats = driver.find_element(By.XPATH,'//*[@id="Seats"]')
+
+    # 선택할 인원 수 설정
+    number_of_seats_to_select = config['number_of_seats_to_select']
+
+    # 선택된 좌석 수를 추적하기 위한 카운터
+    selected_seats_count = 0
+
+    # 모든 좌석을 순회하면서 클릭
+    for seat in seats:
         try:
-            driver.find_element(By.XPATH,'//*[@id="Seats"]').click()
-            # 결제 함수 실행
-            # 좌석선택 완료 버튼 클릭
-            driver.switch_to.default_content()
-            driver.switch_to.frame(driver.find_element(By.XPATH,'//*[@id="ifrmSeat"]'))
-            driver.find_element(By.XPATH,'//*[@id="NextStepImage"]').click()
-            break
-            
-        # 좌석이 없으면 다시 조회
+            if selected_seats_count < number_of_seats_to_select:
+                # 좌석을 클릭
+                seat.click()
+                selected_seats_count += 1
+                time.sleep(1)  # 클릭 사이에 적절한 시간 간격 설정
+            else:
+                # 원하는 인원 수만큼 좌석을 선택했으므로 반복 종료
+                break
         except:
-            print('******************************다시선택')
-            driver.switch_to.default_content()
-            driver.switch_to.frame(driver.find_element(By.XPATH,'//*[@id="ifrmSeat"]'))
-            driver.find_element(By.XPATH,'/html/body/form[1]/div/div[1]/div[3]/div/p/a/img').click()
-            time.sleep(1)
+            # 클릭할 수 없는 요소(예: 이미 선택된 좌석)의 경우 예외 처리
+            continue
+    
+    # 웹페이지가 로드될 때까지 2초를 대기
+    driver.implicitly_wait(time_to_wait=5)
+
+    # 좌석 모두 선택하면 좌석 선택완료 버튼 누른다.
+    select_button = driver.find_element(By.XPATH, '/html/body/form[1]/div/div[1]/div[3]/div/div[4]/a')
+    select_button.click()
+
     return
 
-def ticketingInterpark(driver, pageLodeWait):
+def ticketingInterpark(driver, pageLodeWait, config):
+    # 웹페이지가 로드될 때까지 2초를 대기
+    driver.implicitly_wait(time_to_wait=5)
+
     # 안내 팝업 닫기
     popup_button = driver.find_element(By.XPATH, '//*[@id="popup-prdGuide"]/div/div[3]/div/a')
     popup_button.click()
@@ -197,9 +195,9 @@ def ticketingInterpark(driver, pageLodeWait):
     driver.switch_to.window(driver.window_handles[-1])
 
     # reCAPTCHA 해결까지 대기
-    time.sleep(300/5)
+    time.sleep(60)
 
-    select(driver)
+    select(driver, pageLodeWait, config)
     return
 
 def ticketingProcessInterpark():
@@ -216,7 +214,7 @@ def ticketingProcessInterpark():
     searchTicket(driver, pageLodeWait, config)
 
     # Step-4: 공연 예매
-    ticketingInterpark(driver, pageLodeWait)
+    ticketingInterpark(driver, pageLodeWait, config)
 
     driver.quit()
 

@@ -1,0 +1,22 @@
+{
+    "search_Site": "https://www.interpark.com/",
+    "login_type": "local",
+    "login_data": {
+        "local": {
+            "id": "your_id",
+            "password": "your_pwd"
+        },
+        "kakao": {
+            "id": "your_id",
+            "password": "your_pwd"
+        },
+        "google": {
+            "id": "your_id",
+            "password": "your_pwd"
+        },
+        "naver": {
+            "id": "your_id",
+            "password": "your_pwd"
+        }
+    }
+}
