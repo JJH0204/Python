@@ -51,7 +51,7 @@ def json_Init(file_Name, data):
 
 # json 파일 불러오기
 def json_Read(Dir):
-    with open(Dir, 'r') as json_file:
+    with open(Dir+'.json', 'r') as json_file:
         config = json.load(json_file)
     return config
 
