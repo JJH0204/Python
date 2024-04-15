@@ -1,6 +1,7 @@
 import json
+import os
 
-json_Dir = 'project\AutoTicketing\json'
+json_Dir = 'project/AutoTicketing/json/'
 
 # 로그인 정보 json 파일 초기값
 login_data = {
@@ -43,12 +44,6 @@ search_data = {
     "search_Type_comment": "search_URL or search_field"
 }
 
-# json 파일 생성
-def json_Init(file_Name, data):
-    with open(file_Name+'.json', 'w') as json_file:
-        json.dump(data, json_file, indent=4)
-    return
-
 # json 파일 불러오기
 def json_Read(Dir):
     with open(Dir+'.json', 'r') as json_file:
@@ -58,13 +53,47 @@ def json_Read(Dir):
 # json 파일 저장하기
 def json_Write(file_Name, data):
     with open(file_Name+'.json', 'w') as json_file:
-            json.dump(data, json_file, indent=4)
+        json.dump(data, json_file, indent=4)
     return
 
+# json 파일 초기화
+def json_Init(fileName):
+    try:
+        if os.path.exists(json_Dir + fileName):
+            return json_Read( json_Dir + fileName)
+        else:
+            raise FileNotFoundError
+    except FileNotFoundError:
+        if fileName == 'login_data':
+            json_Write( json_Dir + fileName,  login_data)
+            return login_data
+        elif fileName == 'drive_setup':
+            json_Write( json_Dir + fileName,  drive_setup)
+            return drive_setup
+        elif fileName == 'search_data':
+            json_Write( json_Dir + fileName,  search_data)
+            return search_data
+
+def json_Check(loginData, searchData):
+    case_A = loginData['login_data']['local']['id'] == login_data['login_data']['local']['id']
+    case_B = loginData['login_data']['kakao']['id'] == login_data['login_data']['kakao']['id']
+    case_C = loginData['login_data']['google']['id'] == login_data['login_data']['google']['id']
+    case_D = loginData['login_data']['naver']['id'] == login_data['login_data']['naver']['id']
+    case_E = searchData['search_Key'] == search_data['search_Key']
+
+    if case_A and case_B and case_C and case_D:
+        print(json_Dir+"login_data.json 파일에 로그인에 필요한 정보(id/pwd)를 입력해주세요.\n");
+        return True
+    elif case_E:
+        print(json_Dir+"search_data.json 파일에 검색어를 입력해주세요.\n");
+        return True
+    else:
+        return False
+
 def init_process():
-    json_Init(json_Dir+'\login_data', login_data)
-    json_Init(json_Dir+'\drive_setup', drive_setup)
-    json_Init(json_Dir+'\search_data', search_data)
+    # json_Init(json_Dir+'\login_data', login_data)
+    # json_Init(json_Dir+'\drive_setup', drive_setup)
+    # json_Init(json_Dir+'\search_data', search_data)
     return
 
 if __name__ == "__main__":

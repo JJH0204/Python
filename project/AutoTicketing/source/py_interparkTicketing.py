@@ -10,13 +10,17 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import Select
 import urllib.parse
 
-import os
+
 import time
 import random
 
 import py_chrome
-from py_Json import json
-import py_Json
+
+from py_Json import json    # Json 라이브러리
+import py_Json              # Json 파일 관련 커스텀 함수
+
+import os                   # os 라이브러리
+import platform             # os 정보를 얻기 위한 라이브러리
 
 def loginInterpark(driver, pageLodeWait, config):
     # Step-2: 로그인
@@ -173,26 +177,51 @@ def ticketingInterpark(driver, pageLodeWait, config):
     select(driver, pageLodeWait, config)
     return
 
-def ticketingProcessInterpark():
-    # Step-0: Json파일 로드 및 웹 드라이버 실행
-    # Step-1: 인터파크 접속
-    driverSet = py_Json.json_Read(py_Json.json_Dir+'\drive_setup')
-    driver = py_chrome.driver_init(driverSet)
-    pageLodeWait = WebDriverWait(driver, 30)    # 페이지 로딩 대기 시간
+
+
+def ticketingInterpark():
+    # Step_1: 프로세스 초기화
+    login_data = py_Json.json_Init('login_data')
+    driveSet_data = py_Json.json_Init('driver_setup')
+    search_data = py_Json.json_Init('search_data')
+
+    if py_Json.json_Check(login_data, search_data):
+        sProcessStep = "End_Process"
+    else:
+        sProcessStep = "Driver_Init"
     
-    # Step-2: 로그인
-    loginInterpark(driver, pageLodeWait, config)
+    while (sProcessStep != "End_Process"):
+        print(sProcessStep)
+        sProcessStep = "End_Process"
+        # if (sProcessStep == "Driver_Init"):
+            
+        # elif (sProcessStep == "Search_Page"):
+        
+        # elif
+        break
+    print(sProcessStep)
+    # Step_2: 드라이브 초기화
+    # S
 
-    # Step-3: 공연 검색
-    searchTicket(driver, pageLodeWait, config)
+    # # Step-0: Json파일 로드 및 웹 드라이버 실행
+    # # Step-1: 인터파크 접속
+    # driverSet = py_Json.json_Read(py_Json.json_Dir+'\drive_setup')
+    # driver = py_chrome.driver_init(driverSet)
+    # pageLodeWait = WebDriverWait(driver, 30)    # 페이지 로딩 대기 시간
+    
+    # # Step-2: 로그인
+    # loginInterpark(driver, pageLodeWait, config)
 
-    # Step-4: 공연 예매
-    ticketingInterpark(driver, pageLodeWait, config)
+    # # Step-3: 공연 검색
+    # searchTicket(driver, pageLodeWait, config)
 
-    driver.quit()
+    # # Step-4: 공연 예매
+    # ticketingInterpark(driver, pageLodeWait, config)
+
+    # driver.quit()
 
     return
 
 # 이 파이썬 파일을 직접 실행할 때 실행될 main()
 if __name__ == "__main__":
-    ticketingProcessInterpark()
+    ticketingInterpark()
