@@ -1,3 +1,6 @@
+# 정상 작동 버전 확인
+# 파이썬 3.9.9 버전으로 작성된 인터파크 티켓팅 메크로 프로그램 테스트 버전
+
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By  # 요소를 찾는 방법을 지정하는 데 사용됩니다.
@@ -14,7 +17,7 @@ import urllib.parse
 
 import os
 import time
-import easyocr
+# import easyocr
 
 def readJson():
     with open('project/AutoTicketing/login_config.json', 'r') as file:        # json 로그인 정보 가져오기
