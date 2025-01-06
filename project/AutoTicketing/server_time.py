@@ -35,15 +35,25 @@ class ServerTimeTracker:
             
         except Exception as e:
             self.logger.error(f"NTP 서버 시간 가져오기 실패: {str(e)}")
+            
             # HTTP 헤더로 폴백
             try:
                 response = requests.head(url, timeout=2)
+                if 'date' not in response.headers:
+                    self.logger.error("HTTP 응답에 date 헤더가 없습니다")
+                    return datetime.now()  # 로컬 시간 사용
+                    
                 server_time_str = response.headers['date']
-                server_time = datetime.strptime(server_time_str, '%a, %d %b %Y %H:%M:%S %Z')
-                return server_time
+                try:
+                    server_time = datetime.strptime(server_time_str, '%a, %d %b %Y %H:%M:%S %Z')
+                    return server_time
+                except ValueError:
+                    self.logger.error(f"잘못된 시간 형식: {server_time_str}")
+                    return datetime.now()  # 로컬 시간 사용
+                    
             except Exception as e2:
                 self.logger.error(f"HTTP 시간 가져오기도 실패: {str(e2)}")
-                return None
+                return datetime.now()  # 로컬 시간 사용
 
     def calculate_time_difference(self, server_url):
         """Calculate time difference between local and server time"""

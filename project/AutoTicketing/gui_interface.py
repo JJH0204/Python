@@ -5,14 +5,27 @@ import json
 import logging
 from selenium_ticketing import TicketingBot
 from server_time import ServerTimeTracker
+from login_manager import LoginManager
+import tkinter as tk
+from tkinter import messagebox
 
 class TicketingGUI:
     def __init__(self):
         self.setup_logging()
-        self.setup_window()
-        self.load_config()
+        self.window = ctk.CTk()
+        self.window.title("티켓팅 봇")
+        self.window.geometry("600x800")
+        
+        # Initialize bot and time tracker
+        self.login_manager = LoginManager()
         self.ticketing_bot = TicketingBot()
         self.time_tracker = ServerTimeTracker()
+        
+        self.setup_window()
+        self.load_config()
+        
+        self.update_server_time()
+        self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
 
     def setup_logging(self):
         logging.basicConfig(
@@ -23,10 +36,6 @@ class TicketingGUI:
 
     def setup_window(self):
         """Initialize the main window and UI components"""
-        self.window = ctk.CTk()
-        self.window.title("자동 티켓팅 시스템")
-        self.window.geometry("800x600")
-        
         # Create tabs
         self.tabview = ctk.CTkTabview(self.window)
         self.tabview.pack(padx=20, pady=20, fill="both", expand=True)
@@ -41,7 +50,7 @@ class TicketingGUI:
         self.setup_monitor_tab()
 
     def setup_login_tab(self):
-        """Setup login credentials tab"""
+        """Setup login tab"""
         # Website URL
         ctk.CTkLabel(self.tab_login, text="웹사이트 URL:").pack(pady=5)
         self.url_entry = ctk.CTkEntry(self.tab_login, width=300)
@@ -57,9 +66,26 @@ class TicketingGUI:
         self.password_entry = ctk.CTkEntry(self.tab_login, show="*", width=300)
         self.password_entry.pack(pady=5)
         
-        # Save button
-        ctk.CTkButton(self.tab_login, text="로그인 정보 저장", 
-                     command=self.save_credentials).pack(pady=20)
+        # Button frame
+        button_frame = ctk.CTkFrame(self.tab_login)
+        button_frame.pack(pady=20)
+        
+        # Save and Login buttons
+        self.save_button = ctk.CTkButton(
+            button_frame, 
+            text="저장하기",
+            command=self.save_credentials,
+            width=120
+        )
+        self.save_button.pack(side="left", padx=10)
+        
+        self.login_button = ctk.CTkButton(
+            button_frame, 
+            text="로그인",
+            command=self.attempt_login,
+            width=120
+        )
+        self.login_button.pack(side="left", padx=10)
 
     def setup_ticket_tab(self):
         """Setup ticket preferences tab"""
@@ -119,20 +145,46 @@ class TicketingGUI:
         self.stop_button.pack(pady=10)
         self.stop_button.configure(state="disabled")
 
+    def load_config(self):
+        """Load saved configuration"""
+        url, username, password = self.login_manager.get_credentials()
+        self.url_entry.delete(0, tk.END)
+        self.url_entry.insert(0, url)
+        self.username_entry.delete(0, tk.END)
+        self.username_entry.insert(0, username)
+        self.password_entry.delete(0, tk.END)
+        self.password_entry.insert(0, password)
+
     def save_credentials(self):
-        """Save login credentials and start time synchronization"""
-        self.config['url'] = self.url_entry.get()
-        self.config['username'] = self.username_entry.get()
-        self.config['password'] = self.password_entry.get()
-        self.save_config()
+        """Save login credentials"""
+        url = self.url_entry.get()
+        username = self.username_entry.get()
+        password = self.password_entry.get()
         
-        # Start time synchronization with the saved URL
-        if self.config['url']:
-            self.time_tracker.start_tracking(self.config['url'])
-            self.update_server_time()
-            self.logger.info("서버 시간 동기화가 시작되었습니다")
+        try:
+            self.login_manager.validate_credentials(url, username, password)
+            if self.login_manager.save_config(url, username, password):
+                messagebox.showinfo("성공", "로그인 정보가 저장되었습니다.")
+            else:
+                messagebox.showerror("오류", "로그인 정보 저장에 실패했습니다.")
+        except ValueError as e:
+            messagebox.showerror("오류", str(e))
+
+    def attempt_login(self):
+        """Attempt to login with current credentials"""
+        url = self.url_entry.get()
+        username = self.username_entry.get()
+        password = self.password_entry.get()
         
-        self.logger.info("로그인 정보가 저장되었습니다")
+        success, error = self.login_manager.attempt_login(url, username, password)
+        
+        if success:
+            # Update website path in monitor tab
+            self.website_path_entry.delete(0, tk.END)
+            self.website_path_entry.insert(0, url)
+            messagebox.showinfo("성공", "로그인이 완료되었습니다.")
+        else:
+            messagebox.showerror("오류", f"로그인 중 오류가 발생했습니다:\n{error}")
 
     def save_preferences(self):
         """Save ticket preferences"""
@@ -140,15 +192,6 @@ class TicketingGUI:
         self.config['target_time'] = self.time_entry.get()
         self.save_config()
         self.logger.info("설정이 저장되었습니다")
-
-    def load_config(self):
-        """Load configuration from file"""
-        try:
-            with open('config.json', 'r') as f:
-                self.config = json.load(f)
-        except FileNotFoundError:
-            self.config = {}
-            self.logger.info("No config file found, creating new one")
 
     def save_config(self):
         """Save configuration to file"""
@@ -212,6 +255,15 @@ class TicketingGUI:
                 self.logger.error(f"시간 업데이트 실패: {str(e)}")
                 
         self.window.after(50, self.update_server_time)  # 50ms 간격으로 업데이트
+
+    def on_closing(self):
+        """Handle window closing"""
+        self.login_manager.cleanup()
+        if hasattr(self, 'ticketing_bot') and self.ticketing_bot.driver:
+            self.ticketing_bot.driver.quit()
+        if hasattr(self, 'time_tracker'):
+            self.time_tracker.stop_tracking()
+        self.window.quit()
 
     def run(self):
         """Start the GUI application"""
