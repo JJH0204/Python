@@ -6,3 +6,6 @@
 .venv_Learn
 project/AutoTicketing/__pycache__/selenium_ticketing.cpython-313.pyc
 project/AutoTicketing/__pycache__/server_time.cpython-313.pyc
+project/AutoTicketing/__pycache__/login_manager.cpython-313.pyc
+*.json
+*.xlsx
